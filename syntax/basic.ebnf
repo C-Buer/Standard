@@ -1,0 +1,48 @@
+DeclareFunction = AdvanceType, Identifier, "(", ({AdvanceType, ","}, AdvanceType), ")";
+DeclareValuable = AdvanceType, Identifier;
+
+
+
+ArrayType = AdvanceType, ("[", Number, "]"), {"[", Number, "]"};
+AdvanceType = BasicType | BasicStringType | UserType | RestricPtrType | FunctionType;
+FunctionType = ("function(", AdvanceType, ")(", ({AdvanceType, ","}, AdvanceType),")") | ("(", AdvanceType, ")(", ({AdvanceType, ","}, AdvanceType),")");
+RestricPtrType = PtrType, {PtrType}, AdvanceType;
+UserType = Identifier;
+BasicStringType = "string" ;
+
+BasicType = BasicBaseType | BasicExtType;
+BasicExtType = IntExtType | ChatExtType;
+ChatExtType = "char8" | "char16" | "char32" ;
+IntExtType = "int8" | "int16" | "int32" | "int64" ;
+BasicBaseType = PtrType | IntType | ChatType ;
+PtrType = "ptr";
+ChatType = "char";
+IntType = "int";
+
+
+
+PtrValue = HexNumber;
+StringValue = String | Char;
+CharValue = Number | Char;
+IntValue = Number;
+
+String = "\"", Unicode, "\"";
+Char = "\'", ASCII, "\'";
+
+Identifier = ("_" | Character), {"_" | Character | Digit};
+
+Character = CharacterUpper | CharacterLower;
+CharacterUpper = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" ;
+CharacterLower = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" ;
+
+Number = BinNumber | OctNumber | DecNumber | HexNumber;
+HexNumber = "0", ("x" | "X"), {HexDigit};
+DecNumber = ("1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"), {DecDigit};
+OctNumber = "0", {OctDigit};
+BinNumber = "0", ("b" | "B"), {BinDigit};
+
+Digit = DecDigit;
+HexDigit = DecDigit | "a" | "A" | "b" | "B" | "c" | "C" | "d" | "D" | "e" | "E" | "f" | "F" ;
+DecDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+OctDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" ;
+BinDigit = "0" | "1";
