@@ -1,12 +1,12 @@
-DeclareFunction = AdvanceType, Identifier, "(", ({AdvanceType, ","}, AdvanceType), ")";
+DeclareFunction = AdvanceType, Identifier, LeftParen, ({AdvanceType, Comma}, AdvanceType), RightParen;
 DeclareValuable = AdvanceType, Identifier;
 
 
 
-ArrayType = AdvanceType, ("[", Number, "]"), {"[", Number, "]"};
+ArrayType = AdvanceType, (LeftBracket, Number, RightBracket), {LeftBracket, Number, RightBracket};
 AdvanceType = BasicType | BasicStringType | UserType | RestricPtrType | FunctionType;
-FunctionType = ("function(", AdvanceType, ")(", ({AdvanceType, ","}, AdvanceType),")") | ("(", AdvanceType, ")(", ({AdvanceType, ","}, AdvanceType),")");
-RestricPtrType = PtrType, {PtrType}, AdvanceType;
+FunctionType = "function", LeftParen, AdvanceType, RightParen, LeftParen, ({AdvanceType, Comma}, AdvanceType),RightParen;
+RestricPtrType = PtrType, AdvanceType;
 UserType = Identifier;
 BasicStringType = "string" ;
 
@@ -46,3 +46,16 @@ HexDigit = DecDigit | "a" | "A" | "b" | "B" | "c" | "C" | "d" | "D" | "e" | "E" 
 DecDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 OctDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" ;
 BinDigit = "0" | "1";
+
+
+
+RightBrace = "}";
+LeftBrace = "{";
+RightBracket = "]";
+LeftBracket = "[";
+RightParen = ")";
+LeftParen = "(";
+Dot = ".";
+Comma = ",";
+Colon = ":";
+Semicolon = ";";
