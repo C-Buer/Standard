@@ -1,12 +1,13 @@
-DeclareFunction = AdvanceType, Identifier, LeftParen, ({AdvanceType, Comma}, AdvanceType), RightParen;
-DeclareValuable = AdvanceType, Identifier;
+DeclareFunction = AdvanceType, Identifier, LeftParen, ({AdvanceType, Comma}, AdvanceType), RightParen, Semicolon;
+DeclareValuable = AdvanceType, Identifier, Semicolon;
 
 
 
-ArrayType = AdvanceType, (LeftBracket, Number, RightBracket), {LeftBracket, Number, RightBracket};
-AdvanceType = BasicType | BasicStringType | UserType | RestricPtrType | FunctionType;
-FunctionType = "function", LeftParen, AdvanceType, RightParen, LeftParen, ({AdvanceType, Comma}, AdvanceType),RightParen;
-RestricPtrType = PtrType, AdvanceType;
+CompositeType = RestricPtrType | ArrayType | FunctionType;
+RestricPtrType = PtrType, AdvanceType | ArrayType | FunctionType;
+ArrayType = AdvanceType | FunctionType | (LeftParen, CompositeType, RightParen), (LeftBracket, Number, RightBracket), {LeftBracket, Number, RightBracket};
+FunctionType = "function", LeftParen, CompositeType, RightParen, LeftParen, ({CompositeType, Comma}, CompositeType), RightParen;
+AdvanceType = BasicType | BasicStringType | UserType;
 UserType = Identifier;
 BasicStringType = "string" ;
 
@@ -43,9 +44,9 @@ BinNumber = "0", ("b" | "B"), {BinDigit};
 
 Digit = DecDigit;
 HexDigit = DecDigit | "a" | "A" | "b" | "B" | "c" | "C" | "d" | "D" | "e" | "E" | "f" | "F" ;
-DecDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-OctDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" ;
-BinDigit = "0" | "1";
+DecDigit = OctDigit | "8" | "9" ;
+OctDigit = BinDigit | "2" | "3" | "4" | "5" | "6" | "7" ;
+BinDigit = "0" | "1" ;
 
 
 
