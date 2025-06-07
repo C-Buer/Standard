@@ -1,5 +1,5 @@
-DeclareFunction = AdvanceType, Identifier, LeftParen, ({AdvanceType, Comma}, AdvanceType), RightParen, Semicolon;
-DeclareValuable = AdvanceType, Identifier, Semicolon;
+DeclareFunction = CompositeType, Identifier, LeftParen, ({CompositeType, Comma}, CompositeType), RightParen, Semicolon;
+DeclareValuable = CompositeType, Identifier, Semicolon;
 
 
 
