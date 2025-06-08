@@ -1,12 +1,13 @@
-DeclareFunction = AdvanceType, Identifier, "(", ({AdvanceType, ","}, AdvanceType), ")";
-DeclareValuable = AdvanceType, Identifier;
+DeclareFunction = CompositeType, Identifier, LeftParen, ({CompositeType, Comma}, CompositeType), RightParen, Semicolon;
+DeclareValuable = CompositeType, Identifier, Semicolon;
 
 
 
-ArrayType = AdvanceType, ("[", Number, "]"), {"[", Number, "]"};
-AdvanceType = BasicType | BasicStringType | UserType | RestricPtrType | FunctionType;
-FunctionType = ("function(", AdvanceType, ")(", ({AdvanceType, ","}, AdvanceType),")") | ("(", AdvanceType, ")(", ({AdvanceType, ","}, AdvanceType),")");
-RestricPtrType = PtrType, {PtrType}, AdvanceType;
+CompositeType = RestricPtrType | ArrayType | FunctionType;
+RestricPtrType = PtrType, AdvanceType | ArrayType | FunctionType;
+ArrayType = AdvanceType | FunctionType | (LeftParen, CompositeType, RightParen), (LeftBracket, Number, RightBracket), {LeftBracket, Number, RightBracket};
+FunctionType = "function", LeftParen, CompositeType, RightParen, LeftParen, ({CompositeType, Comma}, CompositeType), RightParen;
+AdvanceType = BasicType | BasicStringType | UserType;
 UserType = Identifier;
 BasicStringType = "string" ;
 
@@ -43,6 +44,19 @@ BinNumber = "0", ("b" | "B"), {BinDigit};
 
 Digit = DecDigit;
 HexDigit = DecDigit | "a" | "A" | "b" | "B" | "c" | "C" | "d" | "D" | "e" | "E" | "f" | "F" ;
-DecDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-OctDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" ;
-BinDigit = "0" | "1";
+DecDigit = OctDigit | "8" | "9" ;
+OctDigit = BinDigit | "2" | "3" | "4" | "5" | "6" | "7" ;
+BinDigit = "0" | "1" ;
+
+
+
+RightBrace = "}";
+LeftBrace = "{";
+RightBracket = "]";
+LeftBracket = "[";
+RightParen = ")";
+LeftParen = "(";
+Dot = ".";
+Comma = ",";
+Colon = ":";
+Semicolon = ";";
