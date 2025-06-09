@@ -1,62 +1,178 @@
-DeclareFunction = CompositeType, Identifier, LeftParen, ({CompositeType, Comma}, CompositeType), RightParen, Semicolon;
-DeclareValuable = CompositeType, Identifier, Semicolon;
+(* ----------------- Lexical Level ----------------- *)
+Identifier    = ( "_" | Letter ), { "_" | Letter | Digit } ;
+Number        = DecNumber | HexNumber | OctNumber | BinNumber ;
+String        = "\"" , { UnicodeChar } , "\"" ;
+Char          = "'" , ASCIIChar , "'" ;
 
+DecNumber     = ( "1" | "2" | … | "9" ), { "0" | … | "9" } ;
+HexNumber     = "0" , ( "x" | "X" ), { HexDigit } ;
+OctNumber     = "0" , { "0" | … | "7" } ;
+BinNumber     = "0" , ( "b" | "B" ), { "0" | "1" } ;
 
+Letter        = CharacterUpper | CharacterLower ;
+CharacterUpper= "A" | … | "Z" ;
+CharacterLower= "a" | … | "z" ;
+Digit         = "0" | … | "9" ;
+HexDigit      = Digit | "A" | … | "F" | "a" | … | "f" ;
 
-CompositeType = RestricPtrType | ArrayType | FunctionType;
-RestricPtrType = PtrType, AdvanceType | ArrayType | FunctionType;
-ArrayType = AdvanceType | FunctionType | (LeftParen, CompositeType, RightParen), (LeftBracket, Number, RightBracket), {LeftBracket, Number, RightBracket};
-FunctionType = "function", LeftParen, CompositeType, RightParen, LeftParen, ({CompositeType, Comma}, CompositeType), RightParen;
-AdvanceType = BasicType | BasicStringType | UserType;
-UserType = Identifier;
-BasicStringType = "string" ;
+(* ----------------- Top-level Program ----------------- *)
+Program       = { Declaration } ;
 
-BasicType = BasicBaseType | BasicExtType;
-BasicExtType = IntExtType | ChatExtType;
-ChatExtType = "char8" | "char16" | "char32" ;
-IntExtType = "int8" | "int16" | "int32" | "int64" ;
-BasicBaseType = PtrType | IntType | ChatType ;
-PtrType = "ptr";
-ChatType = "char";
-IntType = "int";
+Declaration   = ClassDecl
+              | InterfaceDecl
+              | FunctionDecl
+              | VarDecl
+              ;
 
+(* ----------------- Class and Interface ----------------- *)
+ClassDecl     = "class", Identifier, "{",
+                    { FieldDecl | MethodDecl },
+                "}" ;
 
+InterfaceDecl = "interface", Identifier,
+                    [ "extends", IdentifierList ],
+                "{",
+                    { MethodSig },
+                "}" ;
 
-PtrValue = HexNumber;
-StringValue = String | Char;
-CharValue = Number | Char;
-IntValue = Number;
+IdentifierList= Identifier, { ",", Identifier } ;
 
-String = "\"", Unicode, "\"";
-Char = "\'", ASCII, "\'";
+(* ----------------- Fields, Methods, Functions, Variables ----------------- *)
+FieldDecl     = Type, Identifier, [ "=", Expression ], ";" ;
 
-Identifier = ("_" | Character), {"_" | Character | Digit};
+MethodDecl    = Type, Identifier,
+                    "(", [ ParameterList ], ")",
+                    Block ;
 
-Character = CharacterUpper | CharacterLower;
-CharacterUpper = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" ;
-CharacterLower = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" ;
+MethodSig     = Type, Identifier,
+                    "(", [ ParameterList ], ")",
+                ";" ;
 
-Number = BinNumber | OctNumber | DecNumber | HexNumber;
-HexNumber = "0", ("x" | "X"), {HexDigit};
-DecNumber = ("1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"), {DecDigit};
-OctNumber = "0", {OctDigit};
-BinNumber = "0", ("b" | "B"), {BinDigit};
+FunctionDecl  = Type, Identifier,
+                    "(", [ ParameterList ], ")",
+                    Block ;
 
-Digit = DecDigit;
-HexDigit = DecDigit | "a" | "A" | "b" | "B" | "c" | "C" | "d" | "D" | "e" | "E" | "f" | "F" ;
-DecDigit = OctDigit | "8" | "9" ;
-OctDigit = BinDigit | "2" | "3" | "4" | "5" | "6" | "7" ;
-BinDigit = "0" | "1" ;
+VarDecl       = Type, Identifier, [ "=", Expression ], ";" ;
 
+ParameterList = Parameter, { ",", Parameter } ;
+Parameter     = Type, Identifier ;
 
+(* ----------------- Statement ----------------- *)
+Statement     = Block
+              | IfStmt
+              | WhileStmt
+              | ReturnStmt
+              | VarDecl
+              | ExprStmt
+              ;
 
-RightBrace = "}";
-LeftBrace = "{";
-RightBracket = "]";
-LeftBracket = "[";
-RightParen = ")";
-LeftParen = "(";
-Dot = ".";
-Comma = ",";
-Colon = ":";
-Semicolon = ";";
+Block         = "{", { Statement }, "}" ;
+
+IfStmt        = "if", "(", Expression, ")", Statement,
+                     [ "else", Statement ] ;
+
+WhileStmt     = "while", "(", Expression, ")", Statement ;
+
+ReturnStmt    = "return", [ Expression ], ";" ;
+
+ExprStmt      = Expression, ";" ;
+
+(* ----------------- Expression ----------------- *)
+Expression        = Assignment ;
+
+Assignment        = LogicOr, { "=", Assignment } ;
+
+LogicOr           = LogicAnd, { "||", LogicAnd } ;
+LogicAnd          = Equality, { "&&", Equality } ;
+
+Equality          = Relational, { ( "==" | "!=" ), Relational } ;
+Relational        = Additive, { ( "<" | ">" | "<=" | ">=" ), Additive } ;
+
+Additive          = Multiplicative, { ( "+" | "-" ), Multiplicative } ;
+Multiplicative    = Unary, { ( "*" | "/" | "%" ), Unary } ;
+
+Unary             = ( "-" | "!" ), Unary
+                  | Primary
+                  ;
+
+Primary           = Identifier
+                  | Number
+                  | String
+                  | "(", Expression, ")"
+                  | Lambda
+                  ;
+
+(* ----------------- Lambda ----------------- *)
+Lambda = "function",
+                        "(", Type, ")",
+                        "(", [ ParameterList ], ")",
+                        Block ;
+
+(* ----------------- Type Definition ----------------- *)
+Type              = CompositeType ;
+
+CompositeType     = RestricPtrType
+                  | ArrayType
+                  | FunctionType
+                  ;
+
+RestricPtrType    = PtrType
+                  | AdvanceType
+                  | ArrayType
+                  | FunctionType
+                  ;
+
+ArrayType         = AdvanceType
+                  | FunctionType
+                  | "(", CompositeType, ")",
+                    "[", Number, "]",
+                    { "[", Number, "]" }
+                  ;
+
+FunctionType      = "function", "(", CompositeType, ")",
+                    "(", [ CompositeType, { ",", CompositeType } ], ")"
+                  ;
+
+AdvanceType       = BasicType
+                  | BasicStringType
+                  | UserType
+                  ;
+
+UserType          = Identifier ;
+
+BasicStringType   = "string" ;
+
+BasicType         = BasicBaseType
+                  | BasicExtType
+                  ;
+
+BasicExtType      = IntExtType
+                  | ChatExtType
+                  ;
+
+ChatExtType       = "char8" | "char16" | "char32" ;
+
+IntExtType        = "int8" | "int16" | "int32" | "int64" ;
+
+BasicBaseType     = PtrType | IntType | ChatType ;
+
+PtrType           = "ptr" ;
+ChatType          = "char" ;
+IntType           = "int" ;
+
+(* ----------------- Value Literal ----------------- *)
+PtrValue          = HexNumber ;
+StringValue       = String | Char ;
+CharValue         = Number | Char ;
+IntValue          = Number ;
+
+RightBrace        = "}" ;
+LeftBrace         = "{" ;
+RightBracket      = "]" ;
+LeftBracket       = "[" ;
+RightParen        = ")" ;
+LeftParen         = "(" ;
+Dot               = "." ;
+Comma             = "," ;
+Colon             = ":" ;
+Semicolon         = ";" ;
